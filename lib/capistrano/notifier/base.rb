@@ -42,6 +42,7 @@ class Capistrano::Notifier::Base
   end
 
   def stage
+    cap.webistrano_stage if cap.respond_to? :webistrano_stage
     cap.stage if cap.respond_to? :stage
   end
 
