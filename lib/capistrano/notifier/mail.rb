@@ -87,26 +87,6 @@ class Capistrano::Notifier::Mail < Capistrano::Notifier::Base
     cap.notifier_mail_options[:from]
   end
 
-  def git_commit_prefix
-    "#{git_prefix}/commit"
-  end
-
-  def git_compare_prefix
-    "#{git_prefix}/compare"
-  end
-
-  def git_prefix
-    giturl ? giturl : "https://github.com/#{github}"
-  end
-
-  def github
-    cap.notifier_mail_options[:github]
-  end
-
-  def giturl
-    cap.notifier_mail_options[:giturl]
-  end
-
   def notify_method
     cap.notifier_mail_options[:method]
   end

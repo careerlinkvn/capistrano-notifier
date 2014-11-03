@@ -7,8 +7,8 @@ describe Capistrano::Notifier::Mail do
 
   before :each do
     configuration.load do |configuration|
+      set :github, 'example/example'
       set :notifier_mail_options, {
-        github: 'example/example',
         method: :sendmail,
         from:   'sender@example.com',
         to:     'example@example.com',
@@ -32,8 +32,8 @@ describe Capistrano::Notifier::Mail do
 
   it 'delivers mail' do
     configuration.load do |configuration|
+      set :github, 'example/example'
       set :notifier_mail_options, {
-        github: 'example/example',
         method: :test,
         from:   'sender@example.com',
         to:     'example@example.com'
@@ -111,9 +111,7 @@ describe Capistrano::Notifier::Mail do
 
   it 'should work with gitlab' do
     configuration.load do |configuration|
-      set :notifier_mail_options, {
-        giturl: 'https://my.gitlab.url/',
-      }
+      set :giturl, 'https://my.gitlab.url/'
     end
 
     subject.send(:git_prefix).should == 'https://my.gitlab.url/'
@@ -121,10 +119,8 @@ describe Capistrano::Notifier::Mail do
 
   it 'should default to whatever was specified in giturl' do
     configuration.load do |configuration|
-      set :notifier_mail_options, {
-        giturl: 'https://my.gitlab.url/',
-        github: 'example/example'
-      }
+      set :github, 'example/example'
+      set :giturl, 'https://my.gitlab.url/'
     end
 
     subject.send(:git_prefix).should == 'https://my.gitlab.url/'
@@ -133,7 +129,7 @@ describe Capistrano::Notifier::Mail do
   it 'renders a plaintext email' do
     subject.send(:text).should == <<-BODY.gsub(/^ {6}/, '')
       Deployer:     John Doe
-      Application:  Example
+      Application:  example
       Branch:       master
       Environment:  test
       Time:         01/01/2012 at 12:00 AM #{Time.now.zone}
@@ -170,7 +166,7 @@ describe Capistrano::Notifier::Mail do
                 </tr>
                 <tr>
                   <td><strong>Application:</strong></td>
-                  <td>Example</td>
+                  <td>example</td>
                 </tr>
                 <tr>
                   <td><strong>Branch:</strong></td>

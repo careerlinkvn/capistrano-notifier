@@ -24,7 +24,7 @@ class Capistrano::Notifier::Base
   def git_log
     return unless git_range
 
-    `git log #{git_range} --no-merges --format=format:"%h %s (%an)"`
+    `git log --stat #{git_range} --no-merges --format=format:"%h: %s (%an)"`
   end
 
   def git_previous_revision
@@ -37,18 +37,51 @@ class Capistrano::Notifier::Base
     "#{git_previous_revision}..#{git_current_revision}"
   end
 
+  def git_compare_params
+    return git_range.gsub('..', '...') if github
+    return git_range.split('..').reverse.join('..') + '#diff' if bitbucket
+  end
+
+  def git_commit_prefix
+    "#{git_prefix}/commit"
+  end
+
+  def git_compare_prefix
+    return "#{git_prefix}/compare" if github
+    return "#{git_prefix}/branches/compare" if bitbucket
+  end
+
+  def git_prefix
+    return giturl if giturl
+    return "https://github.com/#{github}" if github
+    return "https://bitbucket.org/#{bitbucket}" if bitbucket
+  end
+
+  def github
+    cap.github if cap.respond_to? :github
+  end
+
+  def bitbucket
+    cap.bitbucket if cap.respond_to? :bitbucket
+  end
+
+  def giturl
+    cap.giturl if cap.respond_to? :giturl
+  end
+
   def now
     @now ||= Time.now
   end
 
   def stage
-    cap.webistrano_stage if cap.respond_to? :webistrano_stage
-    cap.stage if cap.respond_to? :stage
+    return cap.webistrano_stage if cap.respond_to? :webistrano_stage
+    return cap.stage if cap.respond_to? :stage
   end
 
   def user_name
-    user = ENV['DEPLOYER']
-    user = `git config --get user.name`.strip if user.nil?
+    return user = cap.webistrano_user if cap.respond_to? :webistrano_user
+    return user = ENV['DEPLOYER'] if user.nil?
+    return user = `git config --get user.name`.strip if user.nil?
   end
 end
 
