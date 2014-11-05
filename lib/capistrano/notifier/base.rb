@@ -78,6 +78,12 @@ class Capistrano::Notifier::Base
     return cap.stage if cap.respond_to? :stage
   end
 
+  def hosts
+    cap.find_servers_for_task(cap.current_task).map {|server|
+      server.host
+    }.join(',')
+  end
+
   def user_name
     return user = cap.webistrano_user if cap.respond_to? :webistrano_user
     return user = ENV['DEPLOYER'] if user.nil?
