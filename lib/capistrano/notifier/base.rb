@@ -38,6 +38,8 @@ class Capistrano::Notifier::Base
   end
 
   def git_compare_params
+    return '' unless git_range
+
     return git_range.gsub('..', '...') if github
     return git_range.split('..').reverse.join('..') + '#diff' if bitbucket
   end
