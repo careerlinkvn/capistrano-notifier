@@ -18,7 +18,7 @@ class Capistrano::Notifier::Kibana < Capistrano::Notifier::Base
   end
 
   def perform
-    IO.popen("#{curl_command} -XPOST -H 'Content-type: text/json' #{curl_url} -d #{curl_options}", 'w') do |io|
+    IO.popen("#{curl_command} -XPOST -H 'Content-type: text/json' #{curl_url} -d '#{curl_options}'", 'w') do |io|
       io.puts curl_body
     end
   end
