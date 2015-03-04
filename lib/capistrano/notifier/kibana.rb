@@ -1,4 +1,5 @@
 require 'capistrano/notifier'
+require 'json'
 
 class Capistrano::Notifier::Kibana < Capistrano::Notifier::Base
   def self.load_into(configuration)
@@ -17,7 +18,7 @@ class Capistrano::Notifier::Kibana < Capistrano::Notifier::Base
   end
 
   def perform
-    IO.popen("#{curl_command} #{curl_url} #{curl_options}", 'w') do |io|
+    IO.popen("#{curl_command} -XPOST -H 'Content-type: text/json' #{curl_url} -d #{curl_options}", 'w') do |io|
       io.puts curl_body
     end
   end
@@ -33,10 +34,8 @@ class Capistrano::Notifier::Kibana < Capistrano::Notifier::Base
   end
 
   def curl_options
-    template = ''
-    (cap.notifier_kibana_options[:curl_option_templates] || {}).each do |key, val|
-      template += " -d '#{key}=#{val.gsub("'", "\\'")}'"
-    end
+    options = (cap.notifier_kibana_options[:curl_option_templates] || {})
+    template = JSON.generate(options)
     ERB.new(template).result(binding)
   end
 
